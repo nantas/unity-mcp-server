@@ -7,13 +7,13 @@ export const editorTools = [
     name: "unity_editor_ping",
     description: "Check if the Unity Editor bridge is running and responsive. Returns editor version, project name, and connection status.",
     inputSchema: { type: "object", properties: {} },
-    handler: async () => JSON.stringify(await bridge.ping(), null, 2),
+    handler: async () => JSON.stringify(await bridge.ping()),
   },
   {
     name: "unity_editor_state",
     description: "Get the current Unity Editor state: play mode, compilation status, active scene, project path.",
     inputSchema: { type: "object", properties: {} },
-    handler: async () => JSON.stringify(await bridge.getEditorState(), null, 2),
+    handler: async () => JSON.stringify(await bridge.getEditorState()),
   },
 
   // â”€â”€â”€ Scene Management â”€â”€â”€
@@ -21,7 +21,7 @@ export const editorTools = [
     name: "unity_scene_info",
     description: "Get information about the currently open scene(s), including name, path, dirty state, and root game objects.",
     inputSchema: { type: "object", properties: {} },
-    handler: async () => JSON.stringify(await bridge.getSceneInfo(), null, 2),
+    handler: async () => JSON.stringify(await bridge.getSceneInfo()),
   },
   {
     name: "unity_scene_open",
@@ -33,19 +33,19 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async ({ path }) => JSON.stringify(await bridge.openScene(path), null, 2),
+    handler: async ({ path }) => JSON.stringify(await bridge.openScene(path)),
   },
   {
     name: "unity_scene_save",
     description: "Save the current scene.",
     inputSchema: { type: "object", properties: {} },
-    handler: async () => JSON.stringify(await bridge.saveScene(), null, 2),
+    handler: async () => JSON.stringify(await bridge.saveScene()),
   },
   {
     name: "unity_scene_new",
     description: "Create a new empty scene.",
     inputSchema: { type: "object", properties: {} },
-    handler: async () => JSON.stringify(await bridge.newScene(), null, 2),
+    handler: async () => JSON.stringify(await bridge.newScene()),
   },
   {
     name: "unity_scene_hierarchy",
@@ -56,9 +56,13 @@ export const editorTools = [
         maxDepth: { type: "number", description: "Maximum depth to traverse (default: 10)" },
         maxNodes: { type: "number", description: "Maximum total nodes to return (default: 5000). Use lower values for very large scenes to avoid timeouts." },
         parentPath: { type: "string", description: "Only return hierarchy under this GameObject path (e.g. 'Canvas/Panel'). Useful for exploring specific subtrees in large scenes." },
+        includeTransforms: { type: "boolean", description: "Include position for each node (default: false). Saves ~12 tokens/node when omitted." },
+        includeTag: { type: "boolean", description: "Include tag for each node (default: false)." },
+        includeLayer: { type: "boolean", description: "Include layer for each node (default: false)." },
+        includeInstanceId: { type: "boolean", description: "Include instanceId for each node (default: true). Set to false to save ~2 tokens/node." },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.getHierarchy(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getHierarchy(params)),
   },
 
   // â”€â”€â”€ GameObject Operations â”€â”€â”€
@@ -90,7 +94,7 @@ export const editorTools = [
       },
       required: ["name"],
     },
-    handler: async (params) => JSON.stringify(await bridge.createGameObject(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createGameObject(params)),
   },
   {
     name: "unity_gameobject_delete",
@@ -102,7 +106,7 @@ export const editorTools = [
         instanceId: { type: "number", description: "Instance ID (alternative to path)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.deleteGameObject(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.deleteGameObject(params)),
   },
   {
     name: "unity_gameobject_info",
@@ -114,7 +118,7 @@ export const editorTools = [
         instanceId: { type: "number", description: "Instance ID (alternative to path)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.getGameObjectInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getGameObjectInfo(params)),
   },
   {
     name: "unity_gameobject_set_transform",
@@ -130,7 +134,7 @@ export const editorTools = [
         local: { type: "boolean", description: "If true, set local transform instead of world (default: false)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.setTransform(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setTransform(params)),
   },
 
   // â”€â”€â”€ Component Operations â”€â”€â”€
@@ -145,7 +149,7 @@ export const editorTools = [
       },
       required: ["gameObjectPath", "componentType"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addComponent(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addComponent(params)),
   },
   {
     name: "unity_component_remove",
@@ -159,7 +163,7 @@ export const editorTools = [
       },
       required: ["gameObjectPath", "componentType"],
     },
-    handler: async (params) => JSON.stringify(await bridge.removeComponent(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.removeComponent(params)),
   },
   {
     name: "unity_component_get_properties",
@@ -172,7 +176,7 @@ export const editorTools = [
       },
       required: ["gameObjectPath", "componentType"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getComponentProperties(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getComponentProperties(params)),
   },
   {
     name: "unity_component_set_property",
@@ -204,7 +208,7 @@ export const editorTools = [
           params.value = false;
         }
       }
-      return JSON.stringify(await bridge.setComponentProperty(params), null, 2);
+      return JSON.stringify(await bridge.setComponentProperty(params));
     },
   },
   {
@@ -225,7 +229,7 @@ export const editorTools = [
       },
       required: ["propertyName"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setComponentReference(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setComponentReference(params)),
   },
   {
     name: "unity_component_batch_wire",
@@ -255,7 +259,7 @@ export const editorTools = [
       },
       required: ["references"],
     },
-    handler: async (params) => JSON.stringify(await bridge.batchWireReferences(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.batchWireReferences(params)),
   },
   {
     name: "unity_component_get_referenceable",
@@ -271,7 +275,7 @@ export const editorTools = [
       },
       required: ["propertyName"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getReferenceableObjects(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getReferenceableObjects(params)),
   },
 
   // â”€â”€â”€ Asset Management â”€â”€â”€
@@ -288,7 +292,7 @@ export const editorTools = [
         maxResults: { type: "number", description: "Maximum assets to return (default: 500). Use lower values for large projects." },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.getAssetList(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getAssetList(params)),
   },
   {
     name: "unity_asset_import",
@@ -301,7 +305,7 @@ export const editorTools = [
       },
       required: ["sourcePath", "destinationPath"],
     },
-    handler: async (params) => JSON.stringify(await bridge.importAsset(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.importAsset(params)),
   },
   {
     name: "unity_asset_delete",
@@ -313,7 +317,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.deleteAsset(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.deleteAsset(params)),
   },
   {
     name: "unity_asset_create_prefab",
@@ -326,7 +330,7 @@ export const editorTools = [
       },
       required: ["gameObjectPath", "savePath"],
     },
-    handler: async (params) => JSON.stringify(await bridge.createPrefab(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createPrefab(params)),
   },
   {
     name: "unity_asset_instantiate_prefab",
@@ -342,7 +346,7 @@ export const editorTools = [
       },
       required: ["prefabPath"],
     },
-    handler: async (params) => JSON.stringify(await bridge.instantiatePrefab(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.instantiatePrefab(params)),
   },
 
   // â”€â”€â”€ Script / Code Operations â”€â”€â”€
@@ -358,7 +362,7 @@ export const editorTools = [
       },
       required: ["path", "content"],
     },
-    handler: async (params) => JSON.stringify(await bridge.createScript(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createScript(params)),
   },
   {
     name: "unity_script_read",
@@ -370,7 +374,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.readScript(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.readScript(params)),
   },
   {
     name: "unity_script_update",
@@ -383,7 +387,7 @@ export const editorTools = [
       },
       required: ["path", "content"],
     },
-    handler: async (params) => JSON.stringify(await bridge.updateScript(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.updateScript(params)),
   },
   {
     name: "unity_execute_code",
@@ -395,7 +399,7 @@ export const editorTools = [
       },
       required: ["code"],
     },
-    handler: async ({ code }) => JSON.stringify(await bridge.executeCode(code), null, 2),
+    handler: async ({ code }) => JSON.stringify(await bridge.executeCode(code)),
   },
 
   // â”€â”€â”€ Material / Rendering â”€â”€â”€
@@ -412,7 +416,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.createMaterial(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createMaterial(params)),
   },
   {
     name: "unity_renderer_set_material",
@@ -426,7 +430,7 @@ export const editorTools = [
       },
       required: ["gameObjectPath", "materialPath"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setMaterial(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setMaterial(params)),
   },
 
   // â”€â”€â”€ Build â”€â”€â”€
@@ -451,7 +455,7 @@ export const editorTools = [
       },
       required: ["target", "outputPath"],
     },
-    handler: async (params) => JSON.stringify(await bridge.buildProject(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.buildProject(params)),
   },
 
   // â”€â”€â”€ Console / Logging â”€â”€â”€
@@ -465,13 +469,13 @@ export const editorTools = [
         type: { type: "string", description: "Filter: 'error', 'warning', 'info', or 'all' (default: 'all')" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.getConsoleLog(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getConsoleLog(params)),
   },
   {
     name: "unity_console_clear",
     description: "Clear the Unity console log.",
     inputSchema: { type: "object", properties: {} },
-    handler: async () => JSON.stringify(await bridge.clearConsoleLog(), null, 2),
+    handler: async () => JSON.stringify(await bridge.clearConsoleLog()),
   },
 
   // â”€â”€â”€ Play Mode â”€â”€â”€
@@ -491,7 +495,7 @@ export const editorTools = [
         severity: { type: "string", description: "Filter: 'error', 'warning', or 'all' (default: 'all')" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.getCompilationErrors(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getCompilationErrors(params)),
   },
 
   // ─── Play Mode ───
@@ -505,7 +509,7 @@ export const editorTools = [
       },
       required: ["action"],
     },
-    handler: async ({ action }) => JSON.stringify(await bridge.playMode(action), null, 2),
+    handler: async ({ action }) => JSON.stringify(await bridge.playMode(action)),
   },
 
   // â”€â”€â”€ Editor Menu â”€â”€â”€
@@ -519,7 +523,7 @@ export const editorTools = [
       },
       required: ["menuPath"],
     },
-    handler: async ({ menuPath }) => JSON.stringify(await bridge.executeMenuItem(menuPath), null, 2),
+    handler: async ({ menuPath }) => JSON.stringify(await bridge.executeMenuItem(menuPath)),
   },
 
   // â”€â”€â”€ Project Info â”€â”€â”€
@@ -527,7 +531,7 @@ export const editorTools = [
     name: "unity_project_info",
     description: "Get project information: name, path, Unity version, render pipeline, packages, build settings.",
     inputSchema: { type: "object", properties: {} },
-    handler: async () => JSON.stringify(await bridge.getProjectInfo(), null, 2),
+    handler: async () => JSON.stringify(await bridge.getProjectInfo()),
   },
 
   // â”€â”€â”€ Animation â”€â”€â”€
@@ -541,7 +545,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.createAnimatorController(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createAnimatorController(params)),
   },
   {
     name: "unity_animation_controller_info",
@@ -553,7 +557,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getAnimatorControllerInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getAnimatorControllerInfo(params)),
   },
   {
     name: "unity_animation_add_parameter",
@@ -568,7 +572,7 @@ export const editorTools = [
       },
       required: ["controllerPath", "parameterName", "parameterType"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addAnimationParameter(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addAnimationParameter(params)),
   },
   {
     name: "unity_animation_remove_parameter",
@@ -581,7 +585,7 @@ export const editorTools = [
       },
       required: ["controllerPath", "parameterName"],
     },
-    handler: async (params) => JSON.stringify(await bridge.removeAnimationParameter(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.removeAnimationParameter(params)),
   },
   {
     name: "unity_animation_add_state",
@@ -598,7 +602,7 @@ export const editorTools = [
       },
       required: ["controllerPath", "stateName"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addAnimationState(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addAnimationState(params)),
   },
   {
     name: "unity_animation_remove_state",
@@ -612,7 +616,7 @@ export const editorTools = [
       },
       required: ["controllerPath", "stateName"],
     },
-    handler: async (params) => JSON.stringify(await bridge.removeAnimationState(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.removeAnimationState(params)),
   },
   {
     name: "unity_animation_add_transition",
@@ -645,7 +649,7 @@ export const editorTools = [
       },
       required: ["controllerPath", "destinationState"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addAnimationTransition(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addAnimationTransition(params)),
   },
   {
     name: "unity_animation_create_clip",
@@ -659,7 +663,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.createAnimationClip(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createAnimationClip(params)),
   },
   {
     name: "unity_animation_clip_info",
@@ -671,7 +675,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getAnimationClipInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getAnimationClipInfo(params)),
   },
   {
     name: "unity_animation_set_clip_curve",
@@ -697,7 +701,7 @@ export const editorTools = [
       },
       required: ["clipPath", "propertyName", "keyframes"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setAnimationClipCurve(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setAnimationClipCurve(params)),
   },
   {
     name: "unity_animation_add_layer",
@@ -711,7 +715,7 @@ export const editorTools = [
       },
       required: ["controllerPath", "layerName"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addAnimationLayer(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addAnimationLayer(params)),
   },
   {
     name: "unity_animation_assign_controller",
@@ -725,7 +729,7 @@ export const editorTools = [
       },
       required: ["controllerPath"],
     },
-    handler: async (params) => JSON.stringify(await bridge.assignAnimatorController(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.assignAnimatorController(params)),
   },
   {
     name: "unity_animation_get_curve_keyframes",
@@ -740,7 +744,7 @@ export const editorTools = [
       },
       required: ["clipPath", "propertyName", "typeName"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getCurveKeyframes(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getCurveKeyframes(params)),
   },
   {
     name: "unity_animation_remove_curve",
@@ -755,7 +759,7 @@ export const editorTools = [
       },
       required: ["clipPath", "propertyName", "typeName"],
     },
-    handler: async (params) => JSON.stringify(await bridge.removeCurve(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.removeCurve(params)),
   },
   {
     name: "unity_animation_add_keyframe",
@@ -777,7 +781,7 @@ export const editorTools = [
       },
       required: ["clipPath", "propertyName", "typeName", "time", "value"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addKeyframe(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addKeyframe(params)),
   },
   {
     name: "unity_animation_remove_keyframe",
@@ -793,7 +797,7 @@ export const editorTools = [
       },
       required: ["clipPath", "propertyName", "typeName", "keyframeIndex"],
     },
-    handler: async (params) => JSON.stringify(await bridge.removeKeyframe(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.removeKeyframe(params)),
   },
   {
     name: "unity_animation_add_event",
@@ -810,7 +814,7 @@ export const editorTools = [
       },
       required: ["clipPath", "functionName", "time"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addAnimationEvent(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addAnimationEvent(params)),
   },
   {
     name: "unity_animation_remove_event",
@@ -823,7 +827,7 @@ export const editorTools = [
       },
       required: ["clipPath", "eventIndex"],
     },
-    handler: async (params) => JSON.stringify(await bridge.removeAnimationEvent(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.removeAnimationEvent(params)),
   },
   {
     name: "unity_animation_get_events",
@@ -835,7 +839,7 @@ export const editorTools = [
       },
       required: ["clipPath"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getAnimationEvents(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getAnimationEvents(params)),
   },
   {
     name: "unity_animation_set_clip_settings",
@@ -858,7 +862,7 @@ export const editorTools = [
       },
       required: ["clipPath"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setClipSettings(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setClipSettings(params)),
   },
   {
     name: "unity_animation_remove_transition",
@@ -874,7 +878,7 @@ export const editorTools = [
       },
       required: ["controllerPath", "sourceState"],
     },
-    handler: async (params) => JSON.stringify(await bridge.removeAnimationTransition(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.removeAnimationTransition(params)),
   },
   {
     name: "unity_animation_remove_layer",
@@ -887,7 +891,7 @@ export const editorTools = [
       },
       required: ["controllerPath", "layerIndex"],
     },
-    handler: async (params) => JSON.stringify(await bridge.removeAnimationLayer(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.removeAnimationLayer(params)),
   },
   {
     name: "unity_animation_create_blend_tree",
@@ -917,7 +921,7 @@ export const editorTools = [
       },
       required: ["controllerPath", "blendTreeName", "blendParameter"],
     },
-    handler: async (params) => JSON.stringify(await bridge.createBlendTree(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createBlendTree(params)),
   },
   {
     name: "unity_animation_get_blend_tree",
@@ -931,7 +935,7 @@ export const editorTools = [
       },
       required: ["controllerPath", "stateName"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getBlendTreeInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getBlendTreeInfo(params)),
   },
 
   // â”€â”€â”€ Prefab (Advanced) â”€â”€â”€
@@ -946,7 +950,7 @@ export const editorTools = [
         instanceId: { type: "number", description: "Instance ID of a prefab instance" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.getPrefabInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getPrefabInfo(params)),
   },
   {
     name: "unity_prefab_create_variant",
@@ -959,7 +963,7 @@ export const editorTools = [
       },
       required: ["basePrefabPath", "variantPath"],
     },
-    handler: async (params) => JSON.stringify(await bridge.createPrefabVariant(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createPrefabVariant(params)),
   },
   {
     name: "unity_prefab_apply_overrides",
@@ -971,7 +975,7 @@ export const editorTools = [
         instanceId: { type: "number", description: "Instance ID (alternative to path)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.applyPrefabOverrides(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.applyPrefabOverrides(params)),
   },
   {
     name: "unity_prefab_revert_overrides",
@@ -983,7 +987,7 @@ export const editorTools = [
         instanceId: { type: "number", description: "Instance ID (alternative to path)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.revertPrefabOverrides(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.revertPrefabOverrides(params)),
   },
   {
     name: "unity_prefab_unpack",
@@ -996,7 +1000,7 @@ export const editorTools = [
         completely: { type: "boolean", description: "If true, unpack completely including nested prefabs (default: false)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.unpackPrefab(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.unpackPrefab(params)),
   },
   {
     name: "unity_set_object_reference",
@@ -1013,7 +1017,7 @@ export const editorTools = [
       },
       required: ["propertyName"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setObjectReference(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setObjectReference(params)),
   },
   {
     name: "unity_gameobject_duplicate",
@@ -1026,7 +1030,7 @@ export const editorTools = [
         newName: { type: "string", description: "Name for the duplicate (default: original name + ' (Copy)')" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.duplicateGameObject(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.duplicateGameObject(params)),
   },
   {
     name: "unity_gameobject_set_active",
@@ -1040,7 +1044,7 @@ export const editorTools = [
       },
       required: ["active"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setGameObjectActive(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setGameObjectActive(params)),
   },
   {
     name: "unity_gameobject_reparent",
@@ -1054,7 +1058,7 @@ export const editorTools = [
         worldPositionStays: { type: "boolean", description: "Maintain world position after reparenting (default: true)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.reparentGameObject(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.reparentGameObject(params)),
   },
 
   // â”€â”€â”€ Prefab Asset (Direct Editing) â”€â”€â”€
@@ -1069,7 +1073,7 @@ export const editorTools = [
       },
       required: ["assetPath"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getPrefabAssetHierarchy(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getPrefabAssetHierarchy(params)),
   },
   {
     name: "unity_prefab_get_properties",
@@ -1083,7 +1087,7 @@ export const editorTools = [
       },
       required: ["assetPath", "componentType"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getPrefabAssetProperties(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getPrefabAssetProperties(params)),
   },
   {
     name: "unity_prefab_set_property",
@@ -1099,7 +1103,7 @@ export const editorTools = [
       },
       required: ["assetPath", "componentType", "propertyName"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setPrefabAssetProperty(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setPrefabAssetProperty(params)),
   },
   {
     name: "unity_prefab_add_component",
@@ -1113,7 +1117,7 @@ export const editorTools = [
       },
       required: ["assetPath", "componentType"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addPrefabAssetComponent(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addPrefabAssetComponent(params)),
   },
   {
     name: "unity_prefab_remove_component",
@@ -1128,7 +1132,7 @@ export const editorTools = [
       },
       required: ["assetPath", "componentType"],
     },
-    handler: async (params) => JSON.stringify(await bridge.removePrefabAssetComponent(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.removePrefabAssetComponent(params)),
   },
   {
     name: "unity_prefab_set_reference",
@@ -1147,7 +1151,7 @@ export const editorTools = [
       },
       required: ["assetPath", "propertyName"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setPrefabAssetReference(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setPrefabAssetReference(params)),
   },
   {
     name: "unity_prefab_add_gameobject",
@@ -1165,7 +1169,7 @@ export const editorTools = [
       },
       required: ["assetPath", "name"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addPrefabAssetGameObject(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addPrefabAssetGameObject(params)),
   },
   {
     name: "unity_prefab_remove_gameobject",
@@ -1178,7 +1182,7 @@ export const editorTools = [
       },
       required: ["assetPath", "prefabPath"],
     },
-    handler: async (params) => JSON.stringify(await bridge.removePrefabAssetGameObject(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.removePrefabAssetGameObject(params)),
   },
 
   // â”€â”€â”€ Prefab Variant Management â”€â”€â”€
@@ -1192,7 +1196,7 @@ export const editorTools = [
       },
       required: ["assetPath"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getPrefabVariantInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getPrefabVariantInfo(params)),
   },
   {
     name: "unity_prefab_compare_variant",
@@ -1204,7 +1208,7 @@ export const editorTools = [
       },
       required: ["assetPath"],
     },
-    handler: async (params) => JSON.stringify(await bridge.comparePrefabVariantToBase(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.comparePrefabVariantToBase(params)),
   },
   {
     name: "unity_prefab_apply_variant_override",
@@ -1219,7 +1223,7 @@ export const editorTools = [
       },
       required: ["assetPath"],
     },
-    handler: async (params) => JSON.stringify(await bridge.applyPrefabVariantOverride(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.applyPrefabVariantOverride(params)),
   },
   {
     name: "unity_prefab_revert_variant_override",
@@ -1234,7 +1238,7 @@ export const editorTools = [
       },
       required: ["assetPath"],
     },
-    handler: async (params) => JSON.stringify(await bridge.revertPrefabVariantOverride(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.revertPrefabVariantOverride(params)),
   },
   {
     name: "unity_prefab_transfer_variant_overrides",
@@ -1247,7 +1251,7 @@ export const editorTools = [
       },
       required: ["sourceAssetPath", "targetAssetPath"],
     },
-    handler: async (params) => JSON.stringify(await bridge.transferPrefabVariantOverrides(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.transferPrefabVariantOverrides(params)),
   },
 
   // â”€â”€â”€ Physics â”€â”€â”€
@@ -1265,7 +1269,7 @@ export const editorTools = [
       },
       required: ["origin", "direction"],
     },
-    handler: async (params) => JSON.stringify(await bridge.physicsRaycast(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.physicsRaycast(params)),
   },
   {
     name: "unity_physics_overlap_sphere",
@@ -1279,7 +1283,7 @@ export const editorTools = [
       },
       required: ["center", "radius"],
     },
-    handler: async (params) => JSON.stringify(await bridge.physicsOverlapSphere(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.physicsOverlapSphere(params)),
   },
   {
     name: "unity_physics_overlap_box",
@@ -1293,13 +1297,13 @@ export const editorTools = [
       },
       required: ["center", "halfExtents"],
     },
-    handler: async (params) => JSON.stringify(await bridge.physicsOverlapBox(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.physicsOverlapBox(params)),
   },
   {
     name: "unity_physics_collision_matrix",
     description: "Get the physics collision matrix showing which layers collide with each other.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getCollisionMatrix(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getCollisionMatrix(params)),
   },
   {
     name: "unity_physics_set_collision_layer",
@@ -1314,7 +1318,7 @@ export const editorTools = [
         ignore: { type: "boolean", description: "If true, layers will ignore each other (default: true)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.setCollisionLayer(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setCollisionLayer(params)),
   },
   {
     name: "unity_physics_set_gravity",
@@ -1325,7 +1329,7 @@ export const editorTools = [
         gravity: { type: "object", properties: { x: { type: "number" }, y: { type: "number" }, z: { type: "number" } }, description: "New gravity vector (omit to just read current)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.setGravity(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setGravity(params)),
   },
 
   // â”€â”€â”€ Lighting â”€â”€â”€
@@ -1333,7 +1337,7 @@ export const editorTools = [
     name: "unity_lighting_info",
     description: "Get info about all lights in the scene plus environment/fog settings.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getLightingInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getLightingInfo(params)),
   },
   {
     name: "unity_lighting_create",
@@ -1352,7 +1356,7 @@ export const editorTools = [
         rotation: { type: "object", properties: { x: { type: "number" }, y: { type: "number" }, z: { type: "number" } } },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.createLight(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createLight(params)),
   },
   {
     name: "unity_lighting_set_environment",
@@ -1370,7 +1374,7 @@ export const editorTools = [
         skyboxMaterialPath: { type: "string", description: "Asset path to skybox material" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.setEnvironment(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setEnvironment(params)),
   },
   {
     name: "unity_lighting_create_reflection_probe",
@@ -1385,7 +1389,7 @@ export const editorTools = [
         mode: { type: "string", enum: ["Baked", "Realtime", "Custom"], description: "Probe mode" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.createReflectionProbe(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createReflectionProbe(params)),
   },
   {
     name: "unity_lighting_create_light_probe_group",
@@ -1397,7 +1401,7 @@ export const editorTools = [
         position: { type: "object", properties: { x: { type: "number" }, y: { type: "number" }, z: { type: "number" } } },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.createLightProbeGroup(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createLightProbeGroup(params)),
   },
 
   // â”€â”€â”€ Audio â”€â”€â”€
@@ -1405,7 +1409,7 @@ export const editorTools = [
     name: "unity_audio_info",
     description: "Get info about all AudioSources and AudioListeners in the scene.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getAudioInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getAudioInfo(params)),
   },
   {
     name: "unity_audio_create_source",
@@ -1427,7 +1431,7 @@ export const editorTools = [
         position: { type: "object", properties: { x: { type: "number" }, y: { type: "number" }, z: { type: "number" } } },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.createAudioSource(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createAudioSource(params)),
   },
   {
     name: "unity_audio_set_global",
@@ -1439,7 +1443,7 @@ export const editorTools = [
         pause: { type: "boolean", description: "Pause/unpause all audio" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.setGlobalAudio(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setGlobalAudio(params)),
   },
 
   // â”€â”€â”€ Tags & Layers â”€â”€â”€
@@ -1447,7 +1451,7 @@ export const editorTools = [
     name: "unity_taglayer_info",
     description: "Get all tags, layers, and sorting layers in the project.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getTagsAndLayers(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getTagsAndLayers(params)),
   },
   {
     name: "unity_taglayer_add_tag",
@@ -1459,7 +1463,7 @@ export const editorTools = [
       },
       required: ["tag"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addTag(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addTag(params)),
   },
   {
     name: "unity_taglayer_set_tag",
@@ -1473,7 +1477,7 @@ export const editorTools = [
       },
       required: ["tag"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setTag(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setTag(params)),
   },
   {
     name: "unity_taglayer_set_layer",
@@ -1488,7 +1492,7 @@ export const editorTools = [
         includeChildren: { type: "boolean", description: "Apply to all children recursively" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.setLayer(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setLayer(params)),
   },
   {
     name: "unity_taglayer_set_static",
@@ -1502,7 +1506,7 @@ export const editorTools = [
         includeChildren: { type: "boolean", description: "Apply to all children recursively" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.setStatic(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setStatic(params)),
   },
 
   // â”€â”€â”€ Selection & Scene View â”€â”€â”€
@@ -1510,7 +1514,7 @@ export const editorTools = [
     name: "unity_selection_get",
     description: "Get the currently selected GameObjects in the Unity Editor.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getSelection(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getSelection(params)),
   },
   {
     name: "unity_selection_set",
@@ -1523,7 +1527,7 @@ export const editorTools = [
         instanceId: { type: "integer", description: "Instance ID of GameObject to select" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.setSelection(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setSelection(params)),
   },
   {
     name: "unity_selection_focus_scene_view",
@@ -1539,7 +1543,7 @@ export const editorTools = [
         orthographic: { type: "boolean", description: "Toggle orthographic/perspective" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.focusSceneView(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.focusSceneView(params)),
   },
   {
     name: "unity_selection_find_by_type",
@@ -1551,7 +1555,7 @@ export const editorTools = [
       },
       required: ["typeName"],
     },
-    handler: async (params) => JSON.stringify(await bridge.findObjectsByType(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.findObjectsByType(params)),
   },
 
   // â”€â”€â”€ Agent Management â”€â”€â”€
@@ -1577,7 +1581,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.createInputActions(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createInputActions(params)),
   },
   {
     name: "unity_input_info",
@@ -1589,7 +1593,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getInputActionsInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getInputActionsInfo(params)),
   },
   {
     name: "unity_input_add_map",
@@ -1602,7 +1606,7 @@ export const editorTools = [
       },
       required: ["path", "mapName"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addInputActionMap(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addInputActionMap(params)),
   },
   {
     name: "unity_input_remove_map",
@@ -1615,7 +1619,7 @@ export const editorTools = [
       },
       required: ["path", "mapName"],
     },
-    handler: async (params) => JSON.stringify(await bridge.removeInputActionMap(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.removeInputActionMap(params)),
   },
   {
     name: "unity_input_add_action",
@@ -1631,7 +1635,7 @@ export const editorTools = [
       },
       required: ["path", "mapName", "actionName"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addInputAction(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addInputAction(params)),
   },
   {
     name: "unity_input_remove_action",
@@ -1645,7 +1649,7 @@ export const editorTools = [
       },
       required: ["path", "mapName", "actionName"],
     },
-    handler: async (params) => JSON.stringify(await bridge.removeInputAction(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.removeInputAction(params)),
   },
   {
     name: "unity_input_add_binding",
@@ -1660,7 +1664,7 @@ export const editorTools = [
       },
       required: ["path", "mapName", "actionName", "bindingPath"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addInputBinding(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addInputBinding(params)),
   },
   {
     name: "unity_input_add_composite_binding",
@@ -1688,7 +1692,7 @@ export const editorTools = [
       },
       required: ["path", "mapName", "actionName", "compositeName", "parts"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addInputCompositeBinding(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addInputCompositeBinding(params)),
   },
 
   // â”€â”€â”€ Assembly Definitions â”€â”€â”€
@@ -1733,7 +1737,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.createAssemblyDef(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createAssemblyDef(params)),
   },
   {
     name: "unity_asmdef_info",
@@ -1745,7 +1749,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getAssemblyDefInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getAssemblyDefInfo(params)),
   },
   {
     name: "unity_asmdef_list",
@@ -1757,7 +1761,7 @@ export const editorTools = [
         includePackages: { type: "boolean", description: "Also list assembly definitions from Packages/ (default: false)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.listAssemblyDefs(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.listAssemblyDefs(params)),
   },
   {
     name: "unity_asmdef_add_references",
@@ -1774,7 +1778,7 @@ export const editorTools = [
       },
       required: ["path", "references"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addAssemblyDefReferences(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addAssemblyDefReferences(params)),
   },
   {
     name: "unity_asmdef_remove_references",
@@ -1791,7 +1795,7 @@ export const editorTools = [
       },
       required: ["path", "references"],
     },
-    handler: async (params) => JSON.stringify(await bridge.removeAssemblyDefReferences(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.removeAssemblyDefReferences(params)),
   },
   {
     name: "unity_asmdef_set_platforms",
@@ -1813,7 +1817,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setAssemblyDefPlatforms(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setAssemblyDefPlatforms(params)),
   },
   {
     name: "unity_asmdef_update_settings",
@@ -1841,7 +1845,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.updateAssemblyDefSettings(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.updateAssemblyDefSettings(params)),
   },
   {
     name: "unity_asmdef_create_ref",
@@ -1854,7 +1858,7 @@ export const editorTools = [
       },
       required: ["path", "reference"],
     },
-    handler: async (params) => JSON.stringify(await bridge.createAssemblyRef(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createAssemblyRef(params)),
   },
 
   // â”€â”€â”€ Profiler â”€â”€â”€
@@ -1869,19 +1873,19 @@ export const editorTools = [
       },
       required: ["enabled"],
     },
-    handler: async (params) => JSON.stringify(await bridge.enableProfiler(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.enableProfiler(params)),
   },
   {
     name: "unity_profiler_stats",
     description: "Get current rendering statistics: draw calls, batches, triangles, vertices, set-pass calls, frame time, render time, shadow casters, and more. The profiler does NOT need to be enabled for this â€” stats come from UnityStats which is always available.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getRenderingStats(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getRenderingStats(params)),
   },
   {
     name: "unity_profiler_memory",
     description: "Get detailed memory usage breakdown: total allocated, reserved, Mono heap used/size, graphics driver memory, temp allocator size, and GC info. Values are returned in both bytes and human-readable MB.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getMemoryInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getMemoryInfo(params)),
   },
   {
     name: "unity_profiler_frame_data",
@@ -1895,13 +1899,13 @@ export const editorTools = [
         minTimeMs: { type: "number", description: "Minimum total time in ms to include an item (default: 0.1)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.getProfilerFrameData(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getProfilerFrameData(params)),
   },
   {
     name: "unity_profiler_analyze",
     description: "Run a comprehensive performance analysis combining memory, rendering stats, profiler frame data, and scene complexity. Returns optimization suggestions based on configurable thresholds (e.g. too many batches, high triangle count, excessive set-pass calls, GPU memory usage, shadow casters).",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.analyzePerformance(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.analyzePerformance(params)),
   },
 
   // â”€â”€â”€ Frame Debugger â”€â”€â”€
@@ -1915,13 +1919,13 @@ export const editorTools = [
       },
       required: ["enabled"],
     },
-    handler: async (params) => JSON.stringify(await bridge.enableFrameDebugger(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.enableFrameDebugger(params)),
   },
   {
     name: "unity_debugger_events",
     description: "List all rendering events (draw calls) captured by the Frame Debugger. The Frame Debugger must be enabled first. Returns event index, type, and name for each draw call.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getFrameDebuggerEvents(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getFrameDebuggerEvents(params)),
   },
   {
     name: "unity_debugger_event_details",
@@ -1933,7 +1937,7 @@ export const editorTools = [
       },
       required: ["eventIndex"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getFrameDebuggerEventDetails(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getFrameDebuggerEventDetails(params)),
   },
 
   // â”€â”€â”€ Memory Profiler â”€â”€â”€
@@ -1941,7 +1945,7 @@ export const editorTools = [
     name: "unity_memory_status",
     description: "Check Memory Profiler status: whether the com.unity.memoryprofiler package is installed, available commands, and a quick memory summary. Always call this first before other memory profiler commands.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getMemoryStatus(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getMemoryStatus(params)),
   },
   {
     name: "unity_memory_breakdown",
@@ -1953,7 +1957,7 @@ export const editorTools = [
         maxPerCategory: { type: "number", description: "Max assets to list per category when includeDetails=true (default: 5)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.getMemoryBreakdown(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getMemoryBreakdown(params)),
   },
   {
     name: "unity_memory_top_assets",
@@ -1965,7 +1969,7 @@ export const editorTools = [
         type: { type: "string", description: "Filter by asset type: texture, rendertexture, mesh, audio, material, shader, animation, font (default: all)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.getTopMemoryConsumers(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getTopMemoryConsumers(params)),
   },
   {
     name: "unity_memory_snapshot",
@@ -1976,7 +1980,7 @@ export const editorTools = [
         path: { type: "string", description: "Directory to save snapshot in (default: temp cache)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.takeMemorySnapshot(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.takeMemorySnapshot(params)),
   },
 
   // â”€â”€â”€ Shader Graph â”€â”€â”€
@@ -1984,7 +1988,7 @@ export const editorTools = [
     name: "unity_shadergraph_status",
     description: "Check which graph packages are installed: Shader Graph (com.unity.shadergraph) and Visual Effect Graph (com.unity.visualeffectgraph). Returns available commands based on installed packages.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getShaderGraphStatus(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getShaderGraphStatus(params)),
   },
   {
     name: "unity_shader_list",
@@ -1997,7 +2001,7 @@ export const editorTools = [
         maxResults: { type: "number", description: "Maximum results to return (default: 100)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.listShaders(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.listShaders(params)),
   },
   {
     name: "unity_shadergraph_list",
@@ -2009,7 +2013,7 @@ export const editorTools = [
         maxResults: { type: "number", description: "Maximum results (default: 100)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.listShaderGraphs(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.listShaderGraphs(params)),
   },
   {
     name: "unity_shadergraph_info",
@@ -2021,7 +2025,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getShaderGraphInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getShaderGraphInfo(params)),
   },
   {
     name: "unity_shader_get_properties",
@@ -2033,7 +2037,7 @@ export const editorTools = [
         shaderName: { type: "string", description: "Shader name (e.g. 'Universal Render Pipeline/Lit'). Alternative to path." },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.getShaderProperties(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getShaderProperties(params)),
   },
   {
     name: "unity_shadergraph_create",
@@ -2046,7 +2050,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.createShaderGraph(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createShaderGraph(params)),
   },
   {
     name: "unity_shadergraph_open",
@@ -2058,19 +2062,19 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.openShaderGraph(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.openShaderGraph(params)),
   },
   {
     name: "unity_shadergraph_list_subgraphs",
     description: "List all Sub Graph (.shadersubgraph) assets in the project. Sub Graphs are reusable node groups for Shader Graphs. Requires Shader Graph package.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.listSubGraphs(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.listSubGraphs(params)),
   },
   {
     name: "unity_vfx_list",
     description: "List all Visual Effect Graph assets in the project. Requires Visual Effect Graph package (com.unity.visualeffectgraph).",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.listVFXGraphs(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.listVFXGraphs(params)),
   },
   {
     name: "unity_vfx_open",
@@ -2082,7 +2086,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.openVFXGraph(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.openVFXGraph(params)),
   },
   {
     name: "unity_shadergraph_get_nodes",
@@ -2094,7 +2098,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getShaderGraphNodes(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getShaderGraphNodes(params)),
   },
   {
     name: "unity_shadergraph_get_edges",
@@ -2106,7 +2110,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getShaderGraphEdges(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getShaderGraphEdges(params)),
   },
   {
     name: "unity_shadergraph_add_node",
@@ -2121,7 +2125,7 @@ export const editorTools = [
       },
       required: ["path", "nodeType"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addShaderGraphNode(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addShaderGraphNode(params)),
   },
   {
     name: "unity_shadergraph_remove_node",
@@ -2134,7 +2138,7 @@ export const editorTools = [
       },
       required: ["path", "nodeId"],
     },
-    handler: async (params) => JSON.stringify(await bridge.removeShaderGraphNode(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.removeShaderGraphNode(params)),
   },
   {
     name: "unity_shadergraph_connect",
@@ -2150,7 +2154,7 @@ export const editorTools = [
       },
       required: ["path", "outputNodeId", "outputSlotId", "inputNodeId", "inputSlotId"],
     },
-    handler: async (params) => JSON.stringify(await bridge.connectShaderGraphNodes(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.connectShaderGraphNodes(params)),
   },
   {
     name: "unity_shadergraph_disconnect",
@@ -2166,7 +2170,7 @@ export const editorTools = [
       },
       required: ["path", "outputNodeId", "outputSlotId", "inputNodeId", "inputSlotId"],
     },
-    handler: async (params) => JSON.stringify(await bridge.disconnectShaderGraphNodes(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.disconnectShaderGraphNodes(params)),
   },
   {
     name: "unity_shadergraph_set_node_property",
@@ -2181,13 +2185,13 @@ export const editorTools = [
       },
       required: ["path", "nodeId", "propertyName", "value"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setShaderGraphNodeProperty(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setShaderGraphNodeProperty(params)),
   },
   {
     name: "unity_shadergraph_get_node_types",
     description: "List all available Shader Graph node types by reflecting over the ShaderGraph assembly. Returns type names, categories, and full class names. Useful for discovering available nodes before adding them.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getShaderGraphNodeTypes(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getShaderGraphNodeTypes(params)),
   },
 
   // â”€â”€â”€ Amplify Shader Editor â”€â”€â”€
@@ -2195,7 +2199,7 @@ export const editorTools = [
     name: "unity_amplify_status",
     description: "Check if Amplify Shader Editor is installed in the project. Returns available commands, shader count, and function count. Only works when Amplify Shader Editor is imported.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getAmplifyStatus(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getAmplifyStatus(params)),
   },
   {
     name: "unity_amplify_list",
@@ -2207,7 +2211,7 @@ export const editorTools = [
         maxResults: { type: "number", description: "Maximum results (default: 100)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.listAmplifyShaders(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.listAmplifyShaders(params)),
   },
   {
     name: "unity_amplify_info",
@@ -2219,7 +2223,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getAmplifyShaderInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getAmplifyShaderInfo(params)),
   },
   {
     name: "unity_amplify_open",
@@ -2231,31 +2235,31 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.openAmplifyShader(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.openAmplifyShader(params)),
   },
   {
     name: "unity_amplify_list_functions",
     description: "List all Amplify Shader Functions in the project. Functions are reusable node groups (similar to Shader Graph Sub Graphs). Only available when Amplify is installed.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.listAmplifyFunctions(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.listAmplifyFunctions(params)),
   },
   {
     name: "unity_amplify_get_node_types",
     description: "List all available Amplify Shader Editor node types by reflecting over the ASE assembly. Returns type names, categories, and descriptions. Requires Amplify to be installed.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getAmplifyNodeTypes(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getAmplifyNodeTypes(params)),
   },
   {
     name: "unity_amplify_get_nodes",
     description: "Get all nodes in the currently open Amplify Shader Editor graph. Returns node IDs, types, positions, and port counts. The ASE window must be open with a shader loaded.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getAmplifyGraphNodes(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getAmplifyGraphNodes(params)),
   },
   {
     name: "unity_amplify_get_connections",
     description: "Get all connections between nodes in the currently open Amplify Shader Editor graph. Shows which output ports connect to which input ports.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getAmplifyGraphConnections(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getAmplifyGraphConnections(params)),
   },
   {
     name: "unity_amplify_create_shader",
@@ -2268,7 +2272,7 @@ export const editorTools = [
       },
       required: ["path", "shaderName"],
     },
-    handler: async (params) => JSON.stringify(await bridge.createAmplifyShader(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createAmplifyShader(params)),
   },
   {
     name: "unity_amplify_add_node",
@@ -2282,7 +2286,7 @@ export const editorTools = [
       },
       required: ["nodeType"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addAmplifyNode(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addAmplifyNode(params)),
   },
   {
     name: "unity_amplify_remove_node",
@@ -2294,7 +2298,7 @@ export const editorTools = [
       },
       required: ["nodeId"],
     },
-    handler: async (params) => JSON.stringify(await bridge.removeAmplifyNode(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.removeAmplifyNode(params)),
   },
   {
     name: "unity_amplify_connect",
@@ -2309,7 +2313,7 @@ export const editorTools = [
       },
       required: ["outputNodeId", "outputPortId", "inputNodeId", "inputPortId"],
     },
-    handler: async (params) => JSON.stringify(await bridge.connectAmplifyNodes(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.connectAmplifyNodes(params)),
   },
   {
     name: "unity_amplify_disconnect",
@@ -2323,7 +2327,7 @@ export const editorTools = [
       },
       required: ["nodeId", "portId"],
     },
-    handler: async (params) => JSON.stringify(await bridge.disconnectAmplifyNodes(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.disconnectAmplifyNodes(params)),
   },
   {
     name: "unity_amplify_node_info",
@@ -2335,7 +2339,7 @@ export const editorTools = [
       },
       required: ["nodeId"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getAmplifyNodeInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getAmplifyNodeInfo(params)),
   },
   {
     name: "unity_amplify_set_node_property",
@@ -2349,7 +2353,7 @@ export const editorTools = [
       },
       required: ["nodeId", "propertyName", "value"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setAmplifyNodeProperty(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setAmplifyNodeProperty(params)),
   },
   {
     name: "unity_amplify_move_node",
@@ -2363,7 +2367,7 @@ export const editorTools = [
       },
       required: ["nodeId", "x", "y"],
     },
-    handler: async (params) => JSON.stringify(await bridge.moveAmplifyNode(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.moveAmplifyNode(params)),
   },
   {
     name: "unity_amplify_save",
@@ -2374,7 +2378,7 @@ export const editorTools = [
         path: { type: "string", description: "Optional asset path to save to (e.g. 'Assets/Shaders/MyShader.shader'). Only needed if the shader has never been saved before." },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.saveAmplifyGraph(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.saveAmplifyGraph(params)),
   },
   {
     name: "unity_amplify_close",
@@ -2385,7 +2389,7 @@ export const editorTools = [
         save: { type: "boolean", description: "Save the graph before closing (default: true)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.closeAmplifyEditor(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.closeAmplifyEditor(params)),
   },
   {
     name: "unity_amplify_create_from_template",
@@ -2399,7 +2403,7 @@ export const editorTools = [
       },
       required: ["path", "shaderName", "template"],
     },
-    handler: async (params) => JSON.stringify(await bridge.createAmplifyFromTemplate(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createAmplifyFromTemplate(params)),
   },
   {
     name: "unity_amplify_focus_node",
@@ -2413,13 +2417,13 @@ export const editorTools = [
       },
       required: ["nodeId"],
     },
-    handler: async (params) => JSON.stringify(await bridge.focusAmplifyNode(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.focusAmplifyNode(params)),
   },
   {
     name: "unity_amplify_master_node_info",
     description: "Get detailed information about the master/output node of the currently open Amplify shader graph, including all its input ports and properties.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getAmplifyMasterNodeInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getAmplifyMasterNodeInfo(params)),
   },
   {
     name: "unity_amplify_disconnect_all",
@@ -2431,7 +2435,7 @@ export const editorTools = [
       },
       required: ["nodeId"],
     },
-    handler: async (params) => JSON.stringify(await bridge.disconnectAllAmplifyNode(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.disconnectAllAmplifyNode(params)),
   },
   {
     name: "unity_amplify_duplicate_node",
@@ -2445,7 +2449,7 @@ export const editorTools = [
       },
       required: ["nodeId"],
     },
-    handler: async (params) => JSON.stringify(await bridge.duplicateAmplifyNode(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.duplicateAmplifyNode(params)),
   },
 
   // â”€â”€â”€ Search & Find â”€â”€â”€
@@ -2461,7 +2465,7 @@ export const editorTools = [
       },
       required: ["componentType"],
     },
-    handler: async (params) => JSON.stringify(await bridge.findByComponent(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.findByComponent(params)),
   },
   {
     name: "unity_search_by_tag",
@@ -2474,7 +2478,7 @@ export const editorTools = [
       },
       required: ["tag"],
     },
-    handler: async (params) => JSON.stringify(await bridge.findByTag(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.findByTag(params)),
   },
   {
     name: "unity_search_by_layer",
@@ -2487,7 +2491,7 @@ export const editorTools = [
       },
       required: ["layer"],
     },
-    handler: async (params) => JSON.stringify(await bridge.findByLayer(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.findByLayer(params)),
   },
   {
     name: "unity_search_by_name",
@@ -2502,7 +2506,7 @@ export const editorTools = [
       },
       required: ["name"],
     },
-    handler: async (params) => JSON.stringify(await bridge.findByName(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.findByName(params)),
   },
   {
     name: "unity_search_by_shader",
@@ -2515,7 +2519,7 @@ export const editorTools = [
       },
       required: ["shader"],
     },
-    handler: async (params) => JSON.stringify(await bridge.findByShader(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.findByShader(params)),
   },
   {
     name: "unity_search_assets",
@@ -2529,7 +2533,7 @@ export const editorTools = [
         maxResults: { type: "number", description: "Maximum results to return (default: 100)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.searchAssets(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.searchAssets(params)),
   },
   {
     name: "unity_search_missing_references",
@@ -2541,13 +2545,13 @@ export const editorTools = [
         limit: { type: "number", description: "Maximum results to return (default: 500)." },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.findMissingReferences(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.findMissingReferences(params)),
   },
   {
     name: "unity_scene_stats",
     description: "Get comprehensive scene statistics: total objects, vertices, triangles, lights, cameras, colliders, and top component types.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getSceneStats(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getSceneStats(params)),
   },
 
   // â”€â”€â”€ Project Settings â”€â”€â”€
@@ -2555,7 +2559,7 @@ export const editorTools = [
     name: "unity_settings_quality",
     description: "Get current quality settings: level, shadows, anti-aliasing, LOD bias, vsync, and all quality levels available.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getQualitySettings(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getQualitySettings(params)),
   },
   {
     name: "unity_settings_set_quality_level",
@@ -2567,13 +2571,13 @@ export const editorTools = [
       },
       required: ["level"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setQualityLevel(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setQualityLevel(params)),
   },
   {
     name: "unity_settings_physics",
     description: "Get physics settings: gravity, solver iterations, sleep threshold, contact offset, bounce threshold.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getPhysicsSettings(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getPhysicsSettings(params)),
   },
   {
     name: "unity_settings_set_physics",
@@ -2589,13 +2593,13 @@ export const editorTools = [
         queriesHitTriggers: { type: "boolean", description: "Whether raycasts hit trigger colliders" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.setPhysicsSettings(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setPhysicsSettings(params)),
   },
   {
     name: "unity_settings_time",
     description: "Get time settings: fixedDeltaTime, maximumDeltaTime, timeScale.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getTimeSettings(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getTimeSettings(params)),
   },
   {
     name: "unity_settings_set_time",
@@ -2608,13 +2612,13 @@ export const editorTools = [
         timeScale: { type: "number", description: "Time scale (1 = normal, 0.5 = half speed, 2 = double speed)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.setTimeSettings(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setTimeSettings(params)),
   },
   {
     name: "unity_settings_player",
     description: "Get player settings: company name, product name, version, color space, scripting backend, target architecture.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getPlayerSettings(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getPlayerSettings(params)),
   },
   {
     name: "unity_settings_set_player",
@@ -2628,13 +2632,13 @@ export const editorTools = [
         runInBackground: { type: "boolean", description: "Run in background when unfocused" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.setPlayerSettings(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setPlayerSettings(params)),
   },
   {
     name: "unity_settings_render_pipeline",
     description: "Get information about the current render pipeline (Built-in, URP, HDRP).",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getRenderPipelineInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getRenderPipelineInfo(params)),
   },
 
   // â”€â”€â”€ Undo â”€â”€â”€
@@ -2642,19 +2646,19 @@ export const editorTools = [
     name: "unity_undo",
     description: "Undo the last operation in Unity Editor.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.performUndo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.performUndo(params)),
   },
   {
     name: "unity_redo",
     description: "Redo the last undone operation in Unity Editor.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.performRedo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.performRedo(params)),
   },
   {
     name: "unity_undo_history",
     description: "Get information about the current undo group.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getUndoHistory(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getUndoHistory(params)),
   },
   {
     name: "unity_undo_clear",
@@ -2665,7 +2669,7 @@ export const editorTools = [
         objectPath: { type: "string", description: "Optional: clear undo only for this GameObject. If omitted, clears all." },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.clearUndo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.clearUndo(params)),
   },
 
   // â”€â”€â”€ Screenshot / Scene View â”€â”€â”€
@@ -2679,7 +2683,7 @@ export const editorTools = [
         superSize: { type: "number", description: "Resolution multiplier (1 = normal, 2 = 2x, 4 = 4x)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.captureGameView(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.captureGameView(params)),
   },
   {
     name: "unity_screenshot_scene",
@@ -2692,13 +2696,13 @@ export const editorTools = [
         height: { type: "number", description: "Image height (default: 1080)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.captureSceneView(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.captureSceneView(params)),
   },
   {
     name: "unity_sceneview_info",
     description: "Get Scene View camera info: pivot position, rotation, zoom, orthographic mode, 2D mode.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getSceneViewInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getSceneViewInfo(params)),
   },
   {
     name: "unity_sceneview_set_camera",
@@ -2716,7 +2720,7 @@ export const editorTools = [
         frameSelected: { type: "boolean", description: "Frame the currently selected object" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.setSceneViewCamera(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setSceneViewCamera(params)),
   },
 
   // â”€â”€â”€ Graphics & Visuals â”€â”€â”€
@@ -2745,12 +2749,12 @@ export const editorTools = [
     },
     handler: async (params) => {
       const result = await bridge.captureAssetPreview(params);
-      if (result.error) return JSON.stringify(result, null, 2);
+      if (result.error) return JSON.stringify(result);
       const metadata = { ...result };
       delete metadata.base64;
       return [
         { type: "image", data: result.base64, mimeType: "image/png" },
-        { type: "text", text: JSON.stringify(metadata, null, 2) },
+        { type: "text", text: JSON.stringify(metadata) },
       ];
     },
   },
@@ -2773,11 +2777,11 @@ export const editorTools = [
     },
     handler: async (params) => {
       const result = await bridge.captureSceneViewGraphics(params);
-      if (result.error) return JSON.stringify(result, null, 2);
+      if (result.error) return JSON.stringify(result);
       // Bridge wraps response: { success, data: { success, base64 } }
       const imageData = result.data?.base64 || result.base64;
       if (!imageData || typeof imageData !== "string") {
-        return JSON.stringify({ error: "Scene capture returned no image data", ...result }, null, 2);
+        return JSON.stringify({ error: "Scene capture returned no image data", ...result });
       }
       const metadata = { ...result };
       delete metadata.base64;
@@ -2785,7 +2789,7 @@ export const editorTools = [
       const b64 = imageData.replace(/^data:image\/\w+;base64,/, "");
       return [
         { type: "image", data: b64, mimeType: "image/png" },
-        { type: "text", text: JSON.stringify(metadata, null, 2) },
+        { type: "text", text: JSON.stringify(metadata) },
       ];
     },
   },
@@ -2813,11 +2817,11 @@ export const editorTools = [
     },
     handler: async (params) => {
       const result = await bridge.captureGameViewGraphics(params);
-      if (result.error) return JSON.stringify(result, null, 2);
+      if (result.error) return JSON.stringify(result);
       // Bridge wraps response: { success, data: { success, base64 } }
       const imageData = result.data?.base64 || result.base64;
       if (!imageData || typeof imageData !== "string") {
-        return JSON.stringify({ error: "Game capture returned no image data", ...result }, null, 2);
+        return JSON.stringify({ error: "Game capture returned no image data", ...result });
       }
       const metadata = { ...result };
       delete metadata.base64;
@@ -2825,7 +2829,7 @@ export const editorTools = [
       const b64 = imageData.replace(/^data:image\/\w+;base64,/, "");
       return [
         { type: "image", data: b64, mimeType: "image/png" },
-        { type: "text", text: JSON.stringify(metadata, null, 2) },
+        { type: "text", text: JSON.stringify(metadata) },
       ];
     },
   },
@@ -2868,12 +2872,12 @@ export const editorTools = [
     },
     handler: async (params) => {
       const result = await bridge.renderPrefabPreview(params);
-      if (result.error) return JSON.stringify(result, null, 2);
+      if (result.error) return JSON.stringify(result);
       const metadata = { ...result };
       delete metadata.base64;
       return [
         { type: "image", data: result.base64, mimeType: "image/png" },
-        { type: "text", text: JSON.stringify(metadata, null, 2) },
+        { type: "text", text: JSON.stringify(metadata) },
       ];
     },
   },
@@ -2897,7 +2901,7 @@ export const editorTools = [
       },
     },
     handler: async (params) =>
-      JSON.stringify(await bridge.getMeshInfo(params), null, 2),
+      JSON.stringify(await bridge.getMeshInfo(params)),
   },
   {
     name: "unity_graphics_material_info",
@@ -2930,16 +2934,16 @@ export const editorTools = [
     },
     handler: async (params) => {
       const result = await bridge.getMaterialInfo(params);
-      if (result.error) return JSON.stringify(result, null, 2);
+      if (result.error) return JSON.stringify(result);
       if (result.base64) {
         const metadata = { ...result };
         delete metadata.base64;
         return [
           { type: "image", data: result.base64, mimeType: "image/png" },
-          { type: "text", text: JSON.stringify(metadata, null, 2) },
+          { type: "text", text: JSON.stringify(metadata) },
         ];
       }
-      return JSON.stringify(result, null, 2);
+      return JSON.stringify(result);
     },
   },
   {
@@ -2964,16 +2968,16 @@ export const editorTools = [
     },
     handler: async (params) => {
       const result = await bridge.getTextureInfoGraphics(params);
-      if (result.error) return JSON.stringify(result, null, 2);
+      if (result.error) return JSON.stringify(result);
       if (result.base64) {
         const metadata = { ...result };
         delete metadata.base64;
         return [
           { type: "image", data: result.base64, mimeType: "image/png" },
-          { type: "text", text: JSON.stringify(metadata, null, 2) },
+          { type: "text", text: JSON.stringify(metadata) },
         ];
       }
-      return JSON.stringify(result, null, 2);
+      return JSON.stringify(result);
     },
   },
   {
@@ -2991,7 +2995,7 @@ export const editorTools = [
       required: ["objectPath"],
     },
     handler: async (params) =>
-      JSON.stringify(await bridge.getRendererInfo(params), null, 2),
+      JSON.stringify(await bridge.getRendererInfo(params)),
   },
   {
     name: "unity_graphics_lighting_summary",
@@ -3008,7 +3012,7 @@ export const editorTools = [
       },
     },
     handler: async (params) =>
-      JSON.stringify(await bridge.getLightingSummary(params), null, 2),
+      JSON.stringify(await bridge.getLightingSummary(params)),
   },
 
   // â”€â”€â”€ Terrain â”€â”€â”€
@@ -3027,7 +3031,7 @@ export const editorTools = [
         dataPath: { type: "string", description: "Path to save terrain data asset (default: Assets/TerrainName_Data.asset)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.createTerrain(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createTerrain(params)),
   },
   {
     name: "unity_terrain_info",
@@ -3038,7 +3042,7 @@ export const editorTools = [
         name: { type: "string", description: "Terrain name. If omitted, uses the active terrain." },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.getTerrainInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getTerrainInfo(params)),
   },
   {
     name: "unity_terrain_set_height",
@@ -3054,7 +3058,7 @@ export const editorTools = [
       },
       required: ["x", "z", "height"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setTerrainHeight(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setTerrainHeight(params)),
   },
   {
     name: "unity_terrain_flatten",
@@ -3066,7 +3070,7 @@ export const editorTools = [
         name: { type: "string", description: "Terrain name (optional)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.flattenTerrain(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.flattenTerrain(params)),
   },
   {
     name: "unity_terrain_add_layer",
@@ -3082,7 +3086,7 @@ export const editorTools = [
       },
       required: ["texturePath"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addTerrainLayer(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addTerrainLayer(params)),
   },
   {
     name: "unity_terrain_get_height",
@@ -3096,13 +3100,13 @@ export const editorTools = [
       },
       required: ["worldX", "worldZ"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getTerrainHeight(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getTerrainHeight(params)),
   },
   {
     name: "unity_terrain_list",
     description: "List all terrains in the scene with their names, positions, sizes, and basic info.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.listTerrains(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.listTerrains(params)),
   },
   {
     name: "unity_terrain_raise_lower",
@@ -3119,7 +3123,7 @@ export const editorTools = [
       },
       required: ["x", "z", "delta"],
     },
-    handler: async (params) => JSON.stringify(await bridge.raiseLowerTerrainHeight(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.raiseLowerTerrainHeight(params)),
   },
   {
     name: "unity_terrain_smooth",
@@ -3135,7 +3139,7 @@ export const editorTools = [
       },
       required: ["x", "z"],
     },
-    handler: async (params) => JSON.stringify(await bridge.smoothTerrainHeight(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.smoothTerrainHeight(params)),
   },
   {
     name: "unity_terrain_noise",
@@ -3151,7 +3155,7 @@ export const editorTools = [
         name: { type: "string", description: "Terrain name (optional)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.setTerrainNoise(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setTerrainNoise(params)),
   },
   {
     name: "unity_terrain_set_heights_region",
@@ -3166,7 +3170,7 @@ export const editorTools = [
       },
       required: ["xBase", "yBase", "heights"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setTerrainHeightsRegion(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setTerrainHeightsRegion(params)),
   },
   {
     name: "unity_terrain_get_heights_region",
@@ -3182,7 +3186,7 @@ export const editorTools = [
       },
       required: ["xBase", "yBase", "width", "height"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getTerrainHeightsRegion(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getTerrainHeightsRegion(params)),
   },
   {
     name: "unity_terrain_remove_layer",
@@ -3195,7 +3199,7 @@ export const editorTools = [
       },
       required: ["layerIndex"],
     },
-    handler: async (params) => JSON.stringify(await bridge.removeTerrainLayer(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.removeTerrainLayer(params)),
   },
   {
     name: "unity_terrain_paint_layer",
@@ -3213,7 +3217,7 @@ export const editorTools = [
       },
       required: ["x", "z", "layerIndex"],
     },
-    handler: async (params) => JSON.stringify(await bridge.paintTerrainLayer(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.paintTerrainLayer(params)),
   },
   {
     name: "unity_terrain_fill_layer",
@@ -3226,7 +3230,7 @@ export const editorTools = [
       },
       required: ["layerIndex"],
     },
-    handler: async (params) => JSON.stringify(await bridge.fillTerrainLayer(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.fillTerrainLayer(params)),
   },
   {
     name: "unity_terrain_add_tree_prototype",
@@ -3240,7 +3244,7 @@ export const editorTools = [
       },
       required: ["prefabPath"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addTerrainTreePrototype(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addTerrainTreePrototype(params)),
   },
   {
     name: "unity_terrain_remove_tree_prototype",
@@ -3253,7 +3257,7 @@ export const editorTools = [
       },
       required: ["prototypeIndex"],
     },
-    handler: async (params) => JSON.stringify(await bridge.removeTerrainTreePrototype(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.removeTerrainTreePrototype(params)),
   },
   {
     name: "unity_terrain_place_trees",
@@ -3277,7 +3281,7 @@ export const editorTools = [
       },
       required: ["prototypeIndex"],
     },
-    handler: async (params) => JSON.stringify(await bridge.placeTerrainTrees(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.placeTerrainTrees(params)),
   },
   {
     name: "unity_terrain_clear_trees",
@@ -3289,7 +3293,7 @@ export const editorTools = [
         name: { type: "string", description: "Terrain name (optional)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.clearTerrainTrees(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.clearTerrainTrees(params)),
   },
   {
     name: "unity_terrain_get_tree_instances",
@@ -3301,7 +3305,7 @@ export const editorTools = [
         name: { type: "string", description: "Terrain name (optional)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.getTerrainTreeInstances(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getTerrainTreeInstances(params)),
   },
   {
     name: "unity_terrain_add_detail_prototype",
@@ -3320,7 +3324,7 @@ export const editorTools = [
         name: { type: "string", description: "Terrain name (optional)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.addTerrainDetailPrototype(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addTerrainDetailPrototype(params)),
   },
   {
     name: "unity_terrain_paint_detail",
@@ -3337,7 +3341,7 @@ export const editorTools = [
       },
       required: ["x", "z", "detailIndex"],
     },
-    handler: async (params) => JSON.stringify(await bridge.paintTerrainDetail(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.paintTerrainDetail(params)),
   },
   {
     name: "unity_terrain_scatter_detail",
@@ -3353,7 +3357,7 @@ export const editorTools = [
       },
       required: ["detailIndex"],
     },
-    handler: async (params) => JSON.stringify(await bridge.scatterTerrainDetail(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.scatterTerrainDetail(params)),
   },
   {
     name: "unity_terrain_clear_detail",
@@ -3365,7 +3369,7 @@ export const editorTools = [
         name: { type: "string", description: "Terrain name (optional)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.clearTerrainDetail(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.clearTerrainDetail(params)),
   },
   {
     name: "unity_terrain_set_holes",
@@ -3380,7 +3384,7 @@ export const editorTools = [
       },
       required: ["xBase", "yBase", "holes"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setTerrainHoles(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setTerrainHoles(params)),
   },
   {
     name: "unity_terrain_set_settings",
@@ -3402,7 +3406,7 @@ export const editorTools = [
         name: { type: "string", description: "Terrain name (optional)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.setTerrainSettings(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setTerrainSettings(params)),
   },
   {
     name: "unity_terrain_resize",
@@ -3417,7 +3421,7 @@ export const editorTools = [
         name: { type: "string", description: "Terrain name (optional)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.resizeTerrain(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.resizeTerrain(params)),
   },
   {
     name: "unity_terrain_create_grid",
@@ -3436,7 +3440,7 @@ export const editorTools = [
       },
       required: ["rows", "cols"],
     },
-    handler: async (params) => JSON.stringify(await bridge.createTerrainGrid(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createTerrainGrid(params)),
   },
   {
     name: "unity_terrain_set_neighbors",
@@ -3452,7 +3456,7 @@ export const editorTools = [
       },
       required: ["terrain"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setTerrainNeighbors(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setTerrainNeighbors(params)),
   },
   {
     name: "unity_terrain_import_heightmap",
@@ -3467,7 +3471,7 @@ export const editorTools = [
       },
       required: ["filePath"],
     },
-    handler: async (params) => JSON.stringify(await bridge.importTerrainHeightmap(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.importTerrainHeightmap(params)),
   },
   {
     name: "unity_terrain_export_heightmap",
@@ -3481,7 +3485,7 @@ export const editorTools = [
       },
       required: ["filePath"],
     },
-    handler: async (params) => JSON.stringify(await bridge.exportTerrainHeightmap(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.exportTerrainHeightmap(params)),
   },
   {
     name: "unity_terrain_get_steepness",
@@ -3495,7 +3499,7 @@ export const editorTools = [
       },
       required: ["worldX", "worldZ"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getTerrainSteepness(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getTerrainSteepness(params)),
   },
 
   // â”€â”€â”€ Particle System â”€â”€â”€
@@ -3517,7 +3521,7 @@ export const editorTools = [
         gravityModifier: { type: "number", description: "Gravity multiplier" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.createParticleSystem(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createParticleSystem(params)),
   },
   {
     name: "unity_particle_info",
@@ -3529,7 +3533,7 @@ export const editorTools = [
         instanceId: { type: "number", description: "Instance ID (alternative)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.getParticleSystemInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getParticleSystemInfo(params)),
   },
   {
     name: "unity_particle_set_main",
@@ -3547,7 +3551,7 @@ export const editorTools = [
         simulationSpace: { type: "string", description: "Local, World, or Custom" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.setParticleMainModule(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setParticleMainModule(params)),
   },
   {
     name: "unity_particle_set_emission",
@@ -3562,7 +3566,7 @@ export const editorTools = [
         rateOverDistance: { type: "number", description: "Particles emitted per unit distance" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.setParticleEmission(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setParticleEmission(params)),
   },
   {
     name: "unity_particle_set_shape",
@@ -3578,7 +3582,7 @@ export const editorTools = [
         arc: { type: "number" }, radiusThickness: { type: "number", description: "0 = emit from surface only, 1 = emit from entire volume" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.setParticleShape(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setParticleShape(params)),
   },
   {
     name: "unity_particle_playback",
@@ -3592,7 +3596,7 @@ export const editorTools = [
       },
       required: ["action"],
     },
-    handler: async (params) => JSON.stringify(await bridge.particlePlayback(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.particlePlayback(params)),
   },
 
   // â”€â”€â”€ ScriptableObject â”€â”€â”€
@@ -3607,7 +3611,7 @@ export const editorTools = [
       },
       required: ["type"],
     },
-    handler: async (params) => JSON.stringify(await bridge.createScriptableObject(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createScriptableObject(params)),
   },
   {
     name: "unity_scriptableobject_info",
@@ -3619,7 +3623,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getScriptableObjectInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getScriptableObjectInfo(params)),
   },
   {
     name: "unity_scriptableobject_set_field",
@@ -3633,7 +3637,7 @@ export const editorTools = [
       },
       required: ["path", "field", "value"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setScriptableObjectField(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setScriptableObjectField(params)),
   },
   {
     name: "unity_scriptableobject_list_types",
@@ -3645,7 +3649,7 @@ export const editorTools = [
         includeEngine: { type: "boolean", description: "Include Unity engine types (default: false, project types only)" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.listScriptableObjectTypes(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.listScriptableObjectTypes(params)),
   },
 
   // â”€â”€â”€ Texture â”€â”€â”€
@@ -3659,7 +3663,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getTextureInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getTextureInfo(params)),
   },
   {
     name: "unity_texture_set_import",
@@ -3684,7 +3688,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setTextureImportSettings(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setTextureImportSettings(params)),
   },
   {
     name: "unity_texture_reimport",
@@ -3696,7 +3700,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.reimportTexture(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.reimportTexture(params)),
   },
   {
     name: "unity_texture_set_sprite",
@@ -3710,7 +3714,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setTextureAsSprite(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setTextureAsSprite(params)),
   },
   {
     name: "unity_texture_set_normalmap",
@@ -3722,7 +3726,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setTextureAsNormalMap(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setTextureAsNormalMap(params)),
   },
 
   // â”€â”€â”€ Navigation â”€â”€â”€
@@ -3739,13 +3743,13 @@ export const editorTools = [
         agentClimb: { type: "number", description: "Step height the agent can climb" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.bakeNavMesh(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.bakeNavMesh(params)),
   },
   {
     name: "unity_navmesh_clear",
     description: "Clear all baked NavMeshes from the scene.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.clearNavMesh(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.clearNavMesh(params)),
   },
   {
     name: "unity_navmesh_add_agent",
@@ -3763,7 +3767,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addNavMeshAgent(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addNavMeshAgent(params)),
   },
   {
     name: "unity_navmesh_add_obstacle",
@@ -3777,13 +3781,13 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addNavMeshObstacle(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addNavMeshObstacle(params)),
   },
   {
     name: "unity_navmesh_info",
     description: "Get NavMesh information: vertex/triangle count, agents, obstacles, agent types.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getNavMeshInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getNavMeshInfo(params)),
   },
   {
     name: "unity_navmesh_set_destination",
@@ -3800,7 +3804,7 @@ export const editorTools = [
       },
       required: ["path", "destination"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setAgentDestination(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setAgentDestination(params)),
   },
 
   // â”€â”€â”€ UI â”€â”€â”€
@@ -3815,7 +3819,7 @@ export const editorTools = [
         renderMode: { type: "string", description: "Render mode: overlay, camera, or world" },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.createCanvas(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createCanvas(params)),
   },
   {
     name: "unity_ui_create_element",
@@ -3832,13 +3836,13 @@ export const editorTools = [
       },
       required: ["type"],
     },
-    handler: async (params) => JSON.stringify(await bridge.createUIElement(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createUIElement(params)),
   },
   {
     name: "unity_ui_info",
     description: "Get UI information: canvases, text/image/button counts.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.getUIInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getUIInfo(params)),
   },
   {
     name: "unity_ui_set_text",
@@ -3854,7 +3858,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setUIText(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setUIText(params)),
   },
   {
     name: "unity_ui_set_image",
@@ -3870,7 +3874,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setUIImage(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setUIImage(params)),
   },
 
   // â”€â”€â”€ Package Manager â”€â”€â”€
@@ -3879,7 +3883,7 @@ export const editorTools = [
     name: "unity_packages_list",
     description: "List all installed Unity packages with their name, version, source, and status.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.listPackages(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.listPackages(params)),
   },
   {
     name: "unity_packages_add",
@@ -3891,7 +3895,7 @@ export const editorTools = [
       },
       required: ["identifier"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addPackage(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addPackage(params)),
   },
   {
     name: "unity_packages_remove",
@@ -3903,7 +3907,7 @@ export const editorTools = [
       },
       required: ["name"],
     },
-    handler: async (params) => JSON.stringify(await bridge.removePackage(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.removePackage(params)),
   },
   {
     name: "unity_packages_search",
@@ -3915,7 +3919,7 @@ export const editorTools = [
       },
       required: ["query"],
     },
-    handler: async (params) => JSON.stringify(await bridge.searchPackage(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.searchPackage(params)),
   },
   {
     name: "unity_packages_info",
@@ -3927,7 +3931,7 @@ export const editorTools = [
       },
       required: ["name"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getPackageInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getPackageInfo(params)),
   },
 
   // â”€â”€â”€ Constraints & LOD â”€â”€â”€
@@ -3945,7 +3949,7 @@ export const editorTools = [
       },
       required: ["path", "type"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addConstraint(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addConstraint(params)),
   },
   {
     name: "unity_constraint_info",
@@ -3957,7 +3961,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getConstraintInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getConstraintInfo(params)),
   },
   {
     name: "unity_lod_create",
@@ -3970,7 +3974,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.createLODGroup(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createLODGroup(params)),
   },
   {
     name: "unity_lod_info",
@@ -3982,7 +3986,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getLODGroupInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getLODGroupInfo(params)),
   },
 
   // â”€â”€â”€ Prefs â”€â”€â”€
@@ -3998,7 +4002,7 @@ export const editorTools = [
       },
       required: ["key"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getEditorPref(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getEditorPref(params)),
   },
   {
     name: "unity_editorprefs_set",
@@ -4012,7 +4016,7 @@ export const editorTools = [
       },
       required: ["key", "value"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setEditorPref(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setEditorPref(params)),
   },
   {
     name: "unity_editorprefs_delete",
@@ -4024,7 +4028,7 @@ export const editorTools = [
       },
       required: ["key"],
     },
-    handler: async (params) => JSON.stringify(await bridge.deleteEditorPref(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.deleteEditorPref(params)),
   },
   {
     name: "unity_playerprefs_get",
@@ -4037,7 +4041,7 @@ export const editorTools = [
       },
       required: ["key"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getPlayerPref(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getPlayerPref(params)),
   },
   {
     name: "unity_playerprefs_set",
@@ -4051,7 +4055,7 @@ export const editorTools = [
       },
       required: ["key", "value"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setPlayerPref(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setPlayerPref(params)),
   },
   {
     name: "unity_playerprefs_delete",
@@ -4063,13 +4067,13 @@ export const editorTools = [
       },
       required: ["key"],
     },
-    handler: async (params) => JSON.stringify(await bridge.deletePlayerPref(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.deletePlayerPref(params)),
   },
   {
     name: "unity_playerprefs_delete_all",
     description: "Delete ALL PlayerPrefs. Use with caution.",
     inputSchema: { type: "object", properties: {} },
-    handler: async (params) => JSON.stringify(await bridge.deleteAllPlayerPrefs(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.deleteAllPlayerPrefs(params)),
   },
 
   // â”€â”€â”€ Queue Management (Multi-Agent) â”€â”€â”€
@@ -4078,7 +4082,7 @@ export const editorTools = [
     description:
       "Get the current state of the multi-agent request queue: total queued requests, active agents, per-agent queue depths, and completed cache size. Useful for monitoring when multiple agents are working on the same Unity project.",
     inputSchema: { type: "object", properties: {} },
-    handler: async () => JSON.stringify(await bridge.getQueueInfo(), null, 2),
+    handler: async () => JSON.stringify(await bridge.getQueueInfo()),
   },
   {
     name: "unity_queue_ticket_status",
@@ -4095,14 +4099,14 @@ export const editorTools = [
       required: ["ticketId"],
     },
     handler: async ({ ticketId }) =>
-      JSON.stringify(await bridge.getTicketStatus(ticketId), null, 2),
+      JSON.stringify(await bridge.getTicketStatus(ticketId)),
   },
   {
     name: "unity_agents_list",
     description:
       "List all active agent sessions connected to the AB Unity MCP bridge. Shows each agent's ID, connection time, last activity, current action, total actions count, queued/completed request counts, and average response time.",
     inputSchema: { type: "object", properties: {} },
-    handler: async () => JSON.stringify(await bridge.listAgents(), null, 2),
+    handler: async () => JSON.stringify(await bridge.listAgents()),
   },
   {
     name: "unity_agent_log",
@@ -4119,7 +4123,7 @@ export const editorTools = [
       required: ["agentId"],
     },
     handler: async (params) =>
-      JSON.stringify(await bridge.getAgentLog(params), null, 2),
+      JSON.stringify(await bridge.getAgentLog(params)),
   },
 
   // â”€â”€â”€ MPPM Scenario Management â”€â”€â”€
@@ -4129,13 +4133,13 @@ export const editorTools = [
     name: "unity_mppm_list_scenarios",
     description: "List all MPPM (Multiplayer PlayMode) scenarios in the project with details about instances and configurations.",
     inputSchema: { type: "object", properties: {} },
-    handler: async () => JSON.stringify(await bridge.sendCommand("scenario/list", {}), null, 2),
+    handler: async () => JSON.stringify(await bridge.sendCommand("scenario/list", {})),
   },
   {
     name: "unity_mppm_status",
     description: "Get the current scenario status including running state, active scenario name, and progress.",
     inputSchema: { type: "object", properties: {} },
-    handler: async () => JSON.stringify(await bridge.sendCommand("scenario/status", {}), null, 2),
+    handler: async () => JSON.stringify(await bridge.sendCommand("scenario/status", {})),
   },
   {
     name: "unity_mppm_activate_scenario",
@@ -4147,25 +4151,25 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async ({ path }) => JSON.stringify(await bridge.sendCommand("scenario/activate", { path }), null, 2),
+    handler: async ({ path }) => JSON.stringify(await bridge.sendCommand("scenario/activate", { path })),
   },
   {
     name: "unity_mppm_start",
     description: "Start the currently active scenario.",
     inputSchema: { type: "object", properties: {} },
-    handler: async () => JSON.stringify(await bridge.sendCommand("scenario/start", {}), null, 2),
+    handler: async () => JSON.stringify(await bridge.sendCommand("scenario/start", {})),
   },
   {
     name: "unity_mppm_stop",
     description: "Stop the running scenario.",
     inputSchema: { type: "object", properties: {} },
-    handler: async () => JSON.stringify(await bridge.sendCommand("scenario/stop", {}), null, 2),
+    handler: async () => JSON.stringify(await bridge.sendCommand("scenario/stop", {})),
   },
   {
     name: "unity_mppm_info",
     description: "Get multiplayer play mode information including CurrentPlayer state, tags, and MPPM package version.",
     inputSchema: { type: "object", properties: {} },
-    handler: async () => JSON.stringify(await bridge.sendCommand("scenario/info", {}), null, 2),
+    handler: async () => JSON.stringify(await bridge.sendCommand("scenario/info", {})),
   },
 
   // ─── Testing ───
@@ -4216,12 +4220,12 @@ export const editorTools = [
         await new Promise((r) => setTimeout(r, 2000));
         try {
           const status = await bridge.getTestJob({ jobId: result.jobId });
-          return JSON.stringify(status, null, 2);
+          return JSON.stringify(status);
         } catch (_) {
-          return JSON.stringify(result, null, 2);
+          return JSON.stringify(result);
         }
       }
-      return JSON.stringify(result, null, 2);
+      return JSON.stringify(result);
     },
   },
   {
@@ -4263,15 +4267,15 @@ export const editorTools = [
           lastResult = await bridge.getTestJob(params);
           const status = lastResult?.status;
           if (status === "succeeded" || status === "failed") {
-            return JSON.stringify(lastResult, null, 2);
+            return JSON.stringify(lastResult);
           }
           // Wait 2 seconds before next poll
           await new Promise((r) => setTimeout(r, 2000));
         }
         // Timeout — return last known state
-        return JSON.stringify(lastResult || (await bridge.getTestJob(params)), null, 2);
+        return JSON.stringify(lastResult || (await bridge.getTestJob(params)));
       }
-      return JSON.stringify(await bridge.getTestJob(params), null, 2);
+      return JSON.stringify(await bridge.getTestJob(params));
     },
   },
   {
@@ -4297,7 +4301,7 @@ export const editorTools = [
         },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.listTests(params || {}), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.listTests(params || {})),
   },
 
   // ─── Sprite Atlas ───
@@ -4313,7 +4317,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.createSpriteAtlas(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.createSpriteAtlas(params)),
   },
   {
     name: "unity_spriteatlas_info",
@@ -4325,7 +4329,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.getSpriteAtlasInfo(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.getSpriteAtlasInfo(params)),
   },
   {
     name: "unity_spriteatlas_add",
@@ -4339,7 +4343,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.addToSpriteAtlas(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.addToSpriteAtlas(params)),
   },
   {
     name: "unity_spriteatlas_remove",
@@ -4353,7 +4357,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.removeFromSpriteAtlas(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.removeFromSpriteAtlas(params)),
   },
   {
     name: "unity_spriteatlas_settings",
@@ -4373,7 +4377,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.setSpriteAtlasSettings(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.setSpriteAtlasSettings(params)),
   },
   {
     name: "unity_spriteatlas_delete",
@@ -4385,7 +4389,7 @@ export const editorTools = [
       },
       required: ["path"],
     },
-    handler: async (params) => JSON.stringify(await bridge.deleteSpriteAtlas(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.deleteSpriteAtlas(params)),
   },
   {
     name: "unity_spriteatlas_list",
@@ -4396,6 +4400,6 @@ export const editorTools = [
         folder: { type: "string", description: "Folder to search in (e.g. 'Assets/Atlases'). Omit to search entire project." },
       },
     },
-    handler: async (params) => JSON.stringify(await bridge.listSpriteAtlases(params), null, 2),
+    handler: async (params) => JSON.stringify(await bridge.listSpriteAtlases(params)),
   },
 ];
